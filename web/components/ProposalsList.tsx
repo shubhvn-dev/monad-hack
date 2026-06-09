@@ -6,6 +6,7 @@ import { formatUnits } from 'viem'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ADDRESSES, TRACK_FUND_ABI, formatStatus } from '@/lib/contracts'
+import { MONAD_TESTNET_ID } from '@/lib/useMonadGuard'
 
 type ProposalMeta = { title?: string; description?: string }
 
@@ -17,7 +18,7 @@ const STATUS_VARIANT: Record<string, 'default' | 'secondary' | 'destructive' | '
 
 function ProposalRow({ id }: { id: number }) {
   const { data } = useReadContract({
-    address: ADDRESSES.trackFund, abi: TRACK_FUND_ABI, functionName: 'proposals', args: [BigInt(id)],
+    address: ADDRESSES.trackFund, abi: TRACK_FUND_ABI, functionName: 'proposals', args: [BigInt(id)], chainId: MONAD_TESTNET_ID,
   })
   const [meta, setMeta] = useState<ProposalMeta>({})
 
@@ -47,7 +48,7 @@ function ProposalRow({ id }: { id: number }) {
 }
 
 export function ProposalsList() {
-  const { data: count } = useReadContract({ address: ADDRESSES.trackFund, abi: TRACK_FUND_ABI, functionName: 'proposalCount' })
+  const { data: count } = useReadContract({ address: ADDRESSES.trackFund, abi: TRACK_FUND_ABI, functionName: 'proposalCount', chainId: MONAD_TESTNET_ID })
   const ids = count ? Array.from({ length: Number(count) }, (_, i) => i) : []
 
   return (

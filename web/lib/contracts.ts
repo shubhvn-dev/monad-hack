@@ -3,8 +3,8 @@ import { type Address } from 'viem'
 export const ADDRESSES = {
   mockUSD: '0xCCBE5a3C7dC5287C412598dfb5AEA6571710021e' as Address,
   trackFundFactory: '0x4D527272Cb7d6e0E54f6EDc37061c8f79E20De6C' as Address,
-  trackFund: '0x99244D3e2361df439bc64Ce5E64756FF2F01A02b' as Address,
-  trackToken: '0x6f082E657df05a3AbE100e4e4643E1A1851113bC' as Address,
+  trackFund: '0x64912E918B46C4BBb7C61300CFC30d0b83aBcB1d' as Address,
+  trackToken: '0x8c02b627940308B70C5FfC08236bab670B0a8448' as Address,
 } as const
 
 export const ERC20_ABI = [
@@ -27,6 +27,7 @@ export const TRACK_FUND_ABI = [
       { name: 'id', type: 'uint256' },
       { name: 'requestedAmount', type: 'uint256' },
       { name: 'metadataHash', type: 'bytes32' },
+      { name: 'proposer', type: 'address' },
       { name: 'status', type: 'uint8' },
     ],
   },
@@ -35,6 +36,7 @@ export const TRACK_FUND_ABI = [
   { name: 'propose', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'requestedAmount', type: 'uint256' }, { name: 'metadataHash', type: 'bytes32' }], outputs: [{ type: 'uint256' }] },
   { name: 'approveProposal', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'proposalId', type: 'uint256' }], outputs: [] },
   { name: 'fundProposal', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'proposalId', type: 'uint256' }, { name: 'projectWallet', type: 'address' }], outputs: [] },
+  { name: 'approveAndFund', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'proposalId', type: 'uint256' }, { name: 'projectWallet', type: 'address' }], outputs: [] },
   { name: 'projectTokenBalances', type: 'function', stateMutability: 'view', inputs: [{ name: 'token', type: 'address' }], outputs: [{ type: 'uint256' }] },
   {
     name: 'Deposited', type: 'event',
@@ -42,7 +44,12 @@ export const TRACK_FUND_ABI = [
   },
   {
     name: 'ProposalCreated', type: 'event',
-    inputs: [{ name: 'proposalId', type: 'uint256', indexed: true }, { name: 'requestedAmount', type: 'uint256', indexed: false }, { name: 'metadataHash', type: 'bytes32', indexed: false }],
+    inputs: [
+      { name: 'proposalId', type: 'uint256', indexed: true },
+      { name: 'requestedAmount', type: 'uint256', indexed: false },
+      { name: 'metadataHash', type: 'bytes32', indexed: false },
+      { name: 'proposer', type: 'address', indexed: true },
+    ],
   },
 ] as const
 

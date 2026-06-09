@@ -82,14 +82,15 @@ contract TrackFundTest is Test {
         uint256 id = fund.propose(50e18, hash);
         assertEq(id, 0);
 
-        (uint256 pid, uint256 amount, bytes32 mh, TrackFund.ProposalStatus status) = fund.proposals(0);
+        (uint256 pid, uint256 amount, bytes32 mh, address proposer, TrackFund.ProposalStatus status) = fund.proposals(0);
         assertEq(pid, 0);
         assertEq(amount, 50e18);
         assertEq(mh, hash);
+        assertEq(proposer, researcher);
         assertEq(uint8(status), uint8(TrackFund.ProposalStatus.PENDING));
 
         fund.approveProposal(0);
-        (, , , TrackFund.ProposalStatus status2) = fund.proposals(0);
+        (, , , , TrackFund.ProposalStatus status2) = fund.proposals(0);
         assertEq(uint8(status2), uint8(TrackFund.ProposalStatus.APPROVED));
     }
 
@@ -109,7 +110,7 @@ contract TrackFundTest is Test {
 
         assertEq(musd.balanceOf(projectWallet), 100e18);
         assertEq(fund.totalAssets(), 100e18);
-        (, , , TrackFund.ProposalStatus status) = fund.proposals(0);
+        (, , , , TrackFund.ProposalStatus status) = fund.proposals(0);
         assertEq(uint8(status), uint8(TrackFund.ProposalStatus.FUNDED));
     }
 

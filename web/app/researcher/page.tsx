@@ -1,23 +1,26 @@
 import Link from 'next/link'
 import { WalletButton } from '@/components/WalletButton'
 import { SubmitProposal } from '@/components/SubmitProposal'
-import { ProposalsList } from '@/components/ProposalsList'
 
 export default function ResearcherPage() {
   return (
-    <main className="container mx-auto max-w-3xl py-8 px-4 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">TrackFund — Researcher</h1>
-        <div className="flex items-center gap-4">
-          <Link href="/" className="text-sm text-muted-foreground hover:underline">
-            ← Investor
-          </Link>
-          <WalletButton />
+    <div className="min-h-screen bg-background">
+      <header className="border-b sticky top-0 bg-background/95 backdrop-blur z-10">
+        <div className="container mx-auto max-w-3xl px-4 h-14 flex items-center justify-between">
+          <Link href="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">← TrackFund</Link>
+          <div className="flex items-center gap-3">
+            <Link href="/admin" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Admin</Link>
+            <WalletButton />
+          </div>
         </div>
-      </div>
-
-      <SubmitProposal />
-      <ProposalsList />
-    </main>
+      </header>
+      <main className="container mx-auto max-w-2xl px-4 py-8 space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold">Submit a Project</h1>
+          <p className="text-muted-foreground mt-1">Apply for funding from the Agentic Research Track.</p>
+        </div>
+        <SubmitProposal />
+      </main>
+    </div>
   )
 }

@@ -14,6 +14,7 @@ contract TrackFund {
         uint256 id;
         uint256 requestedAmount;
         bytes32 metadataHash;
+        address proposer;
         ProposalStatus status;
     }
 
@@ -29,7 +30,7 @@ contract TrackFund {
 
     event Deposited(address indexed investor, uint256 amount);
     event Withdrawn(address indexed investor, uint256 amount);
-    event ProposalCreated(uint256 indexed proposalId, uint256 requestedAmount, bytes32 metadataHash);
+    event ProposalCreated(uint256 indexed proposalId, uint256 requestedAmount, bytes32 metadataHash, address indexed proposer);
     event ProposalApproved(uint256 indexed proposalId);
     event ProposalFunded(uint256 indexed proposalId, address indexed projectWallet, uint256 amount);
     event ProjectTokenRegistered(uint256 indexed proposalId, address indexed projectToken, uint256 amount);
@@ -74,9 +75,10 @@ contract TrackFund {
             id: proposalId,
             requestedAmount: requestedAmount,
             metadataHash: metadataHash,
+            proposer: msg.sender,
             status: ProposalStatus.PENDING
         });
-        emit ProposalCreated(proposalId, requestedAmount, metadataHash);
+        emit ProposalCreated(proposalId, requestedAmount, metadataHash, msg.sender);
         return proposalId;
     }
 
@@ -87,6 +89,17 @@ contract TrackFund {
         emit ProposalApproved(proposalId);
     }
 
+    function approveAndFund(uint256 proposalId, address projectWallet) external onlyAdmin {
+        Proposal storage p = proposals[proposalId];
+        require(p.status == ProposalStatus.PENDING, "TrackFund: not pending");
+        require(p.requestedAmount <= totalAssets, "TrackFund: insufficient assets");
+        p.status = ProposalStatus.FUNDED;
+        totalAssets -= p.requestedAmount;
+        IERC20(stableToken).safeTransfer(projectWallet, p.requestedAmount);
+        emit ProposalApproved(proposalId);
+        emit ProposalFunded(proposalId, projectWallet, p.requestedAmount);
+    }
+
     function fundProposal(uint256 proposalId, address projectWallet) external onlyAdmin {
         Proposal storage p = proposals[proposalId];
         require(p.status == ProposalStatus.APPROVED, "TrackFund: not approved");
@@ -95,6 +108,17 @@ contract TrackFund {
         totalAssets -= p.requestedAmount;
         IERC20(stableToken).safeTransfer(projectWallet, p.requestedAmount);
         emit ProposalFunded(proposalId, projectWallet, p.requestedAmount);
+    }
+
+    function getProposal(uint256 proposalId) external view returns (
+        uint256 id,
+        uint256 requestedAmount,
+        bytes32 metadataHash,
+        address proposer,
+        ProposalStatus status
+    ) {
+        Proposal storage p = proposals[proposalId];
+        return (p.id, p.requestedAmount, p.metadataHash, p.proposer, p.status);
     }
 
     function registerProjectToken(uint256 proposalId, address projectToken, uint256 amountToTrack) external {
